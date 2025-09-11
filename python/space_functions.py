@@ -60,3 +60,22 @@ def planet_distance(lam1_deg, beta1_deg, r1, lam2_deg, beta2_deg, r2):
 
     return S_AU, S_km
 
+def synodic_period(P_sidereal_days, P_earth_days=365.25):
+    """
+    Compute the synodic (apparent) rotation period as seen from Earth.
+
+    Parameters
+    ----------
+    P_sidereal_days : float
+        Sidereal rotation period (days)
+    P_earth_days : float, optional
+        Earth's orbital period (days), default = 365.25
+
+    Returns
+    -------
+    P_synodic_days : float
+        Synodic rotation period (days)
+    """
+    return 1.0 / (1.0 / P_sidereal_days - 1.0 / P_earth_days)
+
+
