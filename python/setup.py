@@ -10,7 +10,7 @@ setup(
         "numpy>=1.20",
         "scipy>=1.7",
         "matplotlib>=3.4",
-        # add others if you use them
+        "pint"
     ],
     python_requires=">=3.8",
 )
