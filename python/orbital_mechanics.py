@@ -5,7 +5,7 @@ import numpy as np
 # Unit Conversions
 # =====================================================
 
-def convert_naut_miles(miles):
+def km_from_naut_miles(miles):
     """
     Convert nautical miles to kilometers.
 
@@ -18,9 +18,9 @@ def convert_naut_miles(miles):
     return miles * 1.852
 
 
-def convert_miles(miles):
+def km_from_miles(miles):
     """
-    Convert statute miles to kilometers.
+    Convert miles to kilometers.
 
     Args:
         miles (float): Distance in miles.
