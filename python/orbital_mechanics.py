@@ -210,22 +210,74 @@ def time_of_flight_hohmann(at, u):
     return np.pi * np.sqrt(at ** 3 / u)
 
 
+def hohmann_with_inclination(r1: float, r2: float, mu: float, delta_i_deg: float = 0.0):
+    """
+    Compute Δv for a two-burn Hohmann transfer with optional inclination change
+    at apogee of the transfer ellipse.
+
+    Args:
+        r1 (float): Radius of initial circular orbit (km).
+        r2 (float): Radius of final circular orbit (km).
+        mu (float): Gravitational parameter μ (km^3/s^2).
+        delta_i_deg (float): Inclination change at apogee (degrees). Default 0.
+
+    Returns:
+        dict: {
+            'dv1': first burn at perigee (km/s),
+            'dv2': second burn at apogee including plane change (km/s),
+            'dv_total': total Δv (km/s),
+            'va': velocity at apogee before burn (km/s),
+            'vcirc2': circular velocity at r2 (km/s)
+        }
+    """
+    delta_i = np.deg2rad(delta_i_deg)
+
+    # Semi-major axis of transfer ellipse
+    a_t = 0.5 * (r1 + r2)
+
+    # Initial circular speed at r1
+    v1_circ = np.sqrt(mu / r1)
+
+    # Transfer ellipse perigee velocity
+    v_p = np.sqrt(mu * (2 / r1 - 1 / a_t))
+
+    # First burn Δv
+    dv1 = v_p - v1_circ
+
+    # Transfer ellipse apogee velocity
+    v_a = np.sqrt(mu * (2 / r2 - 1 / a_t))
+
+    # Final circular velocity
+    v2_circ = np.sqrt(mu / r2)
+
+    # Combined burn with plane change (law of cosines on velocity triangle)
+    dv2 = np.sqrt(v_a**2 + v2_circ**2 - 2 * v_a * v2_circ * np.cos(delta_i))
+
+    return {
+        'dv1': dv1,
+        'dv2': dv2,
+        'dv_total': dv1 + dv2,
+        'va': v_a,
+        'vcirc2': v2_circ
+    }
+
 # =====================================================
 # Plane Change Maneuvers
 # =====================================================
 
-def dv_inclination_change(v, thetad):
+def dv_inclination_change(v1, v2, di):
     """
     Delta-V required for an inclination change.
 
     Args:
-        v (float): Orbital velocity at maneuver point (km/s).
-        thetad (float): Inclination change (deg).
+        v1 (float): Initial orbital velocity at maneuver point (km/s).
+        v2 (float): Final orbital velocity at maneuver point (km/s).
+        di (float): Inclination change (rad).
 
     Returns:
         float: Delta-V (km/s).
     """
-    return 2 * v * np.sin(np.radians(thetad) / 2)
+    return np.sqrt(v1**2 + v2**2 - (2 * v1 * v2 * np.cos(di)))
 
 
 # =====================================================
