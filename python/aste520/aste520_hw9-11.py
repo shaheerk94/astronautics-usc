@@ -2,6 +2,7 @@ import numpy as np
 import space_functions as sf
 import orbital_mechanics as omf
 import globals as g
+from launch_sites import LAUNCH_SITES
 
 ## Problem 9
 
@@ -41,15 +42,15 @@ print(f'Final circular velocity: {vr3} km/s; dv2 = {dv2} km/s')
 dv = dv1 + dv2
 print(f'Total DV: {dv} km/s')
 
-# using func:
-
-mu_earth = 398600.4418  # km^3/s^2
-r1 = 6378.137 + 277.8   # Earth radius + 150 nmi (km)
-r2 = 42164.14           # GEO (km)
-delta_i = 28.5          # deg
-
-res = omf.hohmann_with_inclination(r1, r2, mu_earth, delta_i)
-print(res)
-
 ## Part C
+sites = [
+    LAUNCH_SITES['KOUROU'],
+    LAUNCH_SITES['BAIKONUR'],
+    LAUNCH_SITES['SRIHARIKOTA'],
+    LAUNCH_SITES['TANEGASHIMA']
+]
+
+for site in sites:
+    hohmann_transfer_dv = omf.hohmann_with_inclination(r1, r_geo, g.mu_earth, site['latitude_deg'])
+    print(f"For site {site['name']} with inclination {site['latitude_deg']}:\n\t dv = {hohmann_transfer_dv['dv_total']} km/s")
 
