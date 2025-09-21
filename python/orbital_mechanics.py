@@ -35,20 +35,18 @@ def km_from_miles(miles):
 # Orbital Basics
 # =====================================================
 
-def circular_delta_a(a, u, delta_v):
+def velocity_circular_orbit(r, u):
     """
-    Change in semi-major axis for a circular orbit
-    given a tangential velocity change.
+    Orbital velocity in a circular orbit.
 
     Args:
-        a (float): Semi-major axis (km).
+        r (float): Orbital radius.
         u (float): Gravitational parameter μ (km^3/s^2).
-        delta_v (float): Velocity increment (km/s).
 
     Returns:
-        float: Change in semi-major axis (km).
+        velocity: Circular orbial velocity.
     """
-    return 2 * np.sqrt(a ** 3 / u) * delta_v
+    return np.sqrt(u/r)
 
 
 def orbital_period(u, a):
