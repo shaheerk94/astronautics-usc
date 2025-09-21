@@ -8,11 +8,6 @@ def test_convert_naut_miles():
 def test_convert_miles():
     assert np.isclose(omf.km_from_miles(1), 1.60934)
 
-def velocity_circular_orbit():
-    r = r_earth + 100
-    out = omf.velocity_circular_orbit(r, mu_earth)
-    assert abs(out - 7.844108) < 1e-6
-
 def test_orbital_period():
     a = 7000
     P = omf.orbital_period(mu_earth, a)
