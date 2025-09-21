@@ -5,10 +5,10 @@ u_earth = 398600.4418  # km^3/s^2 (Earth GM)
 r_earth = 6378.137     # km (Earth radius)
 
 def test_convert_naut_miles():
-    assert np.isclose(omf.convert_naut_miles(1), 1.852)
+    assert np.isclose(omf.km_from_naut_miles(1), 1.852)
 
 def test_convert_miles():
-    assert np.isclose(omf.convert_miles(1), 1.60934)
+    assert np.isclose(omf.km_from_miles(1), 1.60934)
 
 def test_circular_delta_a():
     a = 7000
