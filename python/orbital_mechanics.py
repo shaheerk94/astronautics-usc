@@ -124,6 +124,43 @@ def angular_speed(u, a):
     return np.sqrt(u / (a ** 3))
 
 
+def mean_to_true_anomaly(M_deg, e, tol=1e-10, max_iter=50):
+    """
+    Convert mean anomaly to true anomaly for an elliptical orbit.
+
+    Args:
+        M_deg (float): Mean anomaly in degrees
+        e (float): Eccentricity (0 <= e < 1)
+        tol (float): Convergence tolerance (radians)
+        max_iter (int): Maximum iterations for Newton's method
+
+    Returns:
+        float: True anomaly in degrees (0–360)
+    """
+    # Convert mean anomaly to radians, normalize to [-pi, pi]
+    M = np.radians(M_deg) % (2 * np.pi)
+    if M > np.pi:
+        M -= 2 * np.pi
+
+    # Initial guess
+    E = M if e < 0.8 else np.pi  # rule of thumb
+
+    # Newton-Raphson iteration
+    for _ in range(max_iter):
+        f = E - e * np.sin(E) - M
+        fprime = 1 - e * np.cos(E)
+        delta = f / fprime
+        E -= delta
+        if abs(delta) < tol:
+            break
+
+    # Convert eccentric anomaly to true anomaly
+    nu = 2 * np.arctan2(np.sqrt(1 + e) * np.sin(E / 2), np.sqrt(1 - e) * np.cos(E / 2))
+    nu_deg = np.degrees(nu) % 360.0
+    return nu_deg
+
+
+
 # =====================================================
 # Hohmann Transfers
 # =====================================================
