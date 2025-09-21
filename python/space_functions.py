@@ -60,6 +60,7 @@ def planet_distance(lam1_deg, beta1_deg, r1, lam2_deg, beta2_deg, r2):
 
     return S_AU, S_km
 
+
 def synodic_period(P_sidereal_days, P_earth_days=365.25):
     """
     Compute the synodic (apparent) rotation period as seen from Earth.
@@ -79,3 +80,25 @@ def synodic_period(P_sidereal_days, P_earth_days=365.25):
     return 1.0 / (1.0 / P_sidereal_days - 1.0 / P_earth_days)
 
 
+def dms_to_decimal(degrees: int, minutes: int = 0, seconds: float = 0.0, hemisphere: str = None) -> float:
+    """
+    Convert degree-minute-second (DMS) notation to decimal degrees.
+
+    Args:
+        degrees (int): Degrees part of the coordinate.
+        minutes (int, optional): Minutes part of the coordinate. Defaults to 0.
+        seconds (float, optional): Seconds part of the coordinate. Defaults to 0.0.
+        hemisphere (str, optional): Hemisphere indicator ('N', 'S', 'E', 'W').
+                                    If given, applies correct sign. Defaults to None.
+
+    Returns:
+        float: Decimal degrees.
+    """
+    decimal = abs(degrees) + minutes / 60 + seconds / 3600
+
+    if hemisphere:
+        hemisphere = hemisphere.upper()
+        if hemisphere in ['S', 'W']:
+            decimal = -decimal
+
+    return decimal
