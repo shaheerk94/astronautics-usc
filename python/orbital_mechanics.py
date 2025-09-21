@@ -35,20 +35,6 @@ def km_from_miles(miles):
 # Orbital Basics
 # =====================================================
 
-def velocity_circular_orbit(r, u):
-    """
-    Orbital velocity in a circular orbit.
-
-    Args:
-        r (float): Orbital radius.
-        u (float): Gravitational parameter μ (km^3/s^2).
-
-    Returns:
-        velocity: Circular orbial velocity.
-    """
-    return np.sqrt(u/r)
-
-
 def orbital_period(u, a):
     """
     Compute orbital period.
