@@ -179,21 +179,35 @@ def second_hohmann_dv(u, r2, a):
     return np.sqrt(u * (2 / r2 - 1 / a)) - np.sqrt(u / r2)
 
 
-def total_hohman_dv(u, r1, r2, at):
+import numpy as np
+
+def hohmann_dv(mu: float, r1: float, r2: float):
     """
-    Total delta-V for a Hohmann transfer.
+    Two-burn Hohmann transfer ΔV from circular radius r1 to r2.
 
     Args:
-        u (float): Gravitational parameter μ (km^3/s^2).
-        r1 (float): Initial orbit radius (km).
-        r2 (float): Final orbit radius (km).
-        at (float): Semi-major axis of transfer orbit (km).
+        mu (float): Gravitational parameter μ (km^3/s^2).
+        r1 (float): Initial circular-orbit radius (km).
+        r2 (float): Final circular-orbit radius (km).
 
     Returns:
-        float: Total delta-V (km/s).
+        dict: {
+            'dv1': ΔV at perigee (km/s),
+            'dv2': ΔV at apogee (km/s),
+            'dv_total': dv1 + dv2 (km/s)
+        }
     """
-    return (np.sqrt(u / r2) - np.sqrt(u * (2 / r2 - 1 / at)) +
-            np.sqrt(u * (2 / r1 - 1 / at)) - np.sqrt(u / r1))
+    a_t = 0.5 * (r1 + r2)
+
+    v1 = np.sqrt(mu / r1)                       # initial circular speed
+    v2 = np.sqrt(mu / r2)                       # final circular speed
+    v_p = np.sqrt(mu * (2/r1 - 1/a_t))          # transfer speed at perigee
+    v_a = np.sqrt(mu * (2/r2 - 1/a_t))          # transfer speed at apogee
+
+    dv1 = abs(v_p - v1)
+    dv2 = abs(v2 - v_a)
+    return {'dv1': dv1, 'dv2': dv2, 'dv_total': dv1 + dv2}
+
 
 
 def time_of_flight_hohmann(at, u):
