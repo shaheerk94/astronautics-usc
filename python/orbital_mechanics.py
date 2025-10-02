@@ -46,7 +46,7 @@ def orbital_period(u, a):
     Returns:
         float: Orbital period (s).
     """
-    return 2 * np.pi / np.sqrt(u) * (a ** 1.5)
+    return 2 * np.pi * np.sqrt((a ** 3)/u)
 
 
 def orbital_velocity(u, r, a):
@@ -144,6 +144,45 @@ def mean_to_true_anomaly(M_deg, e, tol=1e-10, max_iter=50):
     return nu_deg
 
 
+def true_to_eccentric(f_deg, e):
+    """
+    Convert true anomaly to eccentric anomaly robustly.
+
+    Args:
+        f_deg (float): True anomaly in degrees.
+        e (float): Eccentricity (0 <= e < 1).
+
+    Returns:
+        float: Eccentric anomaly in radians (0 to 2π).
+    """
+    f = np.radians(f_deg)
+    cosE = (e + np.cos(f)) / (1 + e * np.cos(f))
+    sinE = (np.sqrt(1 - e ** 2) * np.sin(f)) / (1 + e * np.cos(f))
+    E = np.arctan2(sinE, cosE)
+    if E < 0:
+        E += 2 * np.pi
+    return E
+
+
+def eccentric_to_mean(E, e):
+    """
+    Convert eccentric anomaly to mean anomaly.
+
+    Args:
+        E (float): Eccentric anomaly [radians].
+        e (float): Eccentricity.
+
+    Returns:
+        float: Mean anomaly [radians], normalized to [0, 2π).
+    """
+    M = E - e * np.sin(E)
+    # wrap into [0, 2π)
+    M = np.mod(M, 2*np.pi)
+    return M
+
+
+def time_from_mean_anomaly(M, a, u):
+    return np.sqrt((a**3)/u) * M
 
 # =====================================================
 # Hohmann Transfers
