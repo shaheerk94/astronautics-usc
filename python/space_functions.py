@@ -4,6 +4,7 @@ import numpy as np
 ureg = pint.UnitRegistry()
 Distance = pint.Quantity
 
+
 def apparent_magnitude(r: Distance, abs_magnitude: float) -> float:
     """
     Calculate the apparent magnitude of an object.
@@ -102,3 +103,4 @@ def dms_to_decimal(degrees: int, minutes: int = 0, seconds: float = 0.0, hemisph
             decimal = -decimal
 
     return decimal
+

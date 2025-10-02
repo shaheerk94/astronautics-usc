@@ -1,15 +1,17 @@
 import numpy as np
 import space_functions as sf
 import orbital_mechanics as omf
+import attitude_control as adc
 import globals as g
+
 
 ## Problem 12
 
 def problem_12():
-    ra = 20000 + g.r_earth # apogee distance
-    rp = 800 + g.r_earth # perigee distance
-    a = (rp + ra)/2
-    e = (ra - rp)/(2*a)
+    ra = 20000 + g.r_earth  # apogee distance
+    rp = 800 + g.r_earth  # perigee distance
+    a = (rp + ra) / 2
+    e = (ra - rp) / (2 * a)
 
     f_asc = 360 - 200
     f_desc = f_asc + 180
@@ -49,88 +51,142 @@ def problem_13():
     print(a, h)
 
     # Part B
-    m = 160 # kg
-    A = 7.14 # m^2
+    m = 160  # kg
+    A = 7.14  # m^2
     Cd = 2.24
 
-    Bm = m/(Cd * A)
+    Bm = m / (Cd * A)
 
     ## Part C
-    Rv = 6371.0 # km
+    Rv = 6371.0  # km
     r = Rv + h
-    dh = np.sqrt(r**2 - Rv**2)
+    dh = np.sqrt(r ** 2 - Rv ** 2)
     print(dh)
 
     ## Part D
-    theta_0 = np.acos(Rv/r)
+    theta_0 = np.acos(Rv / r)
     print(theta_0)
 
     Sw = 2 * theta_0 * Rv
     print(Sw)
 
     ## Part E
-    Tmax = 2 * theta_0 * np.sqrt(r**3 / g.mu_earth)
-    print(Tmax/60)
+    Tmax = 2 * theta_0 * np.sqrt(r ** 3 / g.mu_earth)
+    print(Tmax / 60)
 
     ## Part F
-    n = np.sqrt(g.mu_earth/ (r**3))
+    n = np.sqrt(g.mu_earth / (r ** 3))
     vg = n * Rv
     print(vg)
 
     ## part G
     e = np.deg2rad(24)
-    rho = np.asin(Rv/r)
+    rho = np.asin(Rv / r)
     n = np.asin(np.cos(e) * np.sin(rho))
 
-    theta = (np.pi/2) - n - e
-    Tmax2 = 2 * theta * np.sqrt(r**3 / g.mu_earth)
-    print(Tmax2/60)
+    theta = (np.pi / 2) - n - e
+    Tmax2 = 2 * theta * np.sqrt(r ** 3 / g.mu_earth)
+    print(Tmax2 / 60)
 
 
 def problem_14():
     # Part a
-    P = 86164.0905 # s
+    P = 86164.0905  # s
 
     # Part b
-    a = (g.mu_earth * ((P/(2 * np.pi))**2)) **(1/3)
+    a = (g.mu_earth * ((P / (2 * np.pi)) ** 2)) ** (1 / 3)
     r_geo = a
     h = a - g.r_earth
     print(f'a: {a} km')
     print(f'h: {h} km')
 
     # Part C
-    theta = np.sin(g.r_earth/a)
-    print('theta:', theta*2)
-    print(f'theta: {theta * 180/np.pi * 2} deg')
+    theta = np.sin(g.r_earth / a)
+    print('theta:', theta * 2)
+    print(f'theta: {theta * 180 / np.pi * 2} deg')
 
     # Part D
-    theta_0 = np.acos(g.r_earth/a)
-    print('theta_0:', theta_0*180/np.pi, 'deg')
+    theta_0 = np.acos(g.r_earth / a)
+    print('theta_0:', theta_0 * 180 / np.pi, 'deg')
 
     # Part F
     theta = sf.dms_to_decimal(61, 13, 0, 'N')
 
-    x = np.sqrt(g.r_earth**2 + r_geo**2 - (2 * g.r_earth * r_geo * np.cos(theta * np.pi / 180)))
+    x = np.sqrt(g.r_earth ** 2 + r_geo ** 2 - (2 * g.r_earth * r_geo * np.cos(theta * np.pi / 180)))
     print('x:', x, 'km')
 
-    y = ((r_geo**2) - (g.r_earth**2) - (x**2))/(-2 * g.r_earth * x)
-    e = np.acos(y) - np.pi/2
-    print('e:', e*180/np.pi, 'deg')
+    y = ((r_geo ** 2) - (g.r_earth ** 2) - (x ** 2)) / (-2 * g.r_earth * x)
+    e = np.acos(y) - np.pi / 2
+    print('e:', e * 180 / np.pi, 'deg')
 
     # Part G
-    c = 299774 # km/s
-    T = 2*x/c
+    c = 299774  # km/s
+    T = 2 * x / c
     print(f'T: {T} s')
+
+
+def problem_15():
+    A = 1.0  # m^2
+    Fs = 1362  # W/m^2
+    R0 = 1  # AU
+
+    # Part A
+    theta = 0
+    print('Part A')
+    # 1: 100% absorption
+    Ca, Cs, Cd = 1, 0, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fs, A)
+    print(f'fx, fy (100% absorption): {fx}, {fy}')
+
+    # 2: 100% reflection
+    Ca, Cs, Cd = 0, 1, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fs, A)
+    print(f'fx, fy (100% reflection): {fx}, {fy}')
+
+    # 3: 68% absorption, 32% reflection
+    Ca, Cs, Cd = .68, .32, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fs, A)
+    print(f'fx, fy (68% absorption): {fx}, {fy}')
+
+    # Part B
+    print('Part B')
+    theta = 50 * np.pi / 180
+    # 1: Flux
+    I0 = Fs * A * np.cos(theta)
+    print(f'I0: {I0} W')
+
+    # 2: 100% absorption
+    Ca, Cs, Cd = 1, 0, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fs, A)
+    print(f'fx, fy (100% absorption): {fx}, {fy}')
+
+    # 3: 100% reflection
+    Ca, Cs, Cd = 0, 1, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fs, A)
+    print(f'fx, fy (100% absorption): {fx}, {fy}')
+
+    # Part C
+    print('Part C')
+    theta = 30 * np.pi / 180
+    Ca, Cs, Cd = .62, .38, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fs, A)
+    print(f'fx, fy (68% absorption): {fx}, {fy}')
+
+    # Part D
+    Fm = Fs / (1.5**2)
+    theta = 30 * np.pi / 180
+    Ca, Cs, Cd = .62, .38, 0
+    fx, fy = adc.solar_radiation_force(theta, Ca, Cs, Cd, Fm, A)
+    print(f'fx, fy (68% absorption) at Mars: {fx}, {fy}')
+
 
 
 def main():
     # problem_12()
     # problem_13()
-    problem_14()
+    # problem_14()
+    problem_15()
 
 
 if __name__ == '__main__':
     main()
-
-
-
