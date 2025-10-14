@@ -1,6 +1,9 @@
 import numpy as np
+from datetime import datetime, timedelta
+import pytest
 import orbital_mechanics as omf
-from globals import mu_earth, r_earth
+from globals import mu_earth
+
 
 def test_convert_naut_miles():
     assert np.isclose(omf.km_from_naut_miles(1), 1.852)
@@ -102,3 +105,31 @@ def test_dv_total_coplanar():
     ac, at = 7000, 10000
     dv_tot = omf.dv_total_coplanar(mu_earth, ac, at)
     assert dv_tot >= 0
+
+def test_parse_tle_cosmos2319():
+    line1 = "1 23635U 95040B   95215.97504380 -.00000165 +00000-0 +10000-3 0  0018"
+    line2 = "2 23635 004.1663 111.0618 7252147 179.2403 004.8644 02.18377056 00018"
+
+    elements = omf.parse_tle(line1, line2)
+
+    # Check satellite number
+    assert elements['satnum'] == 23635
+
+    # Check epoch (1995 + 215.97504380 days)
+    expected_epoch = datetime(1995, 1, 1) + timedelta(days=215.97504380 - 1)
+    assert abs((elements['epoch'] - expected_epoch).total_seconds()) < 1
+
+    # Orbital elements
+    assert pytest.approx(elements['inclination_deg'], rel=1e-4) == 4.1663
+    assert pytest.approx(elements['raan_deg'], rel=1e-4) == 111.0618
+    assert pytest.approx(elements['eccentricity'], rel=1e-7) == 0.7252147
+    assert pytest.approx(elements['arg_perigee_deg'], rel=1e-4) == 179.2403
+    assert pytest.approx(elements['mean_anomaly_deg'], rel=1e-4) == 4.8644
+    assert pytest.approx(elements['mean_motion_rev_per_day'], rel=1e-6) == 2.18377056
+
+    # Sanity check for semi-major axis
+    # Should be around Earth escape region (~14,700 km for 2.18 rev/day elliptical orbit)
+    assert 10000 < elements['semi_major_axis_km'] < 50000
+
+    # Revolution number
+    assert elements['rev_number'] == 18

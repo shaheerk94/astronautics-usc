@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import datetime, timedelta
 
 
 # =====================================================
@@ -455,3 +456,71 @@ def dv_total_coplanar(u, ac, at):
         float: Total delta-V (km/s).
     """
     return 2 * np.abs(np.sqrt(u * (2 / at - 1 / ac)) - np.sqrt(u / at))
+
+
+def parse_tle(line1: str, line2: str):
+    """
+    Extract orbital elements from a Two-Line Element (TLE) set.
+
+    Parameters
+    ----------
+    line1 : str
+        First line of the TLE
+    line2 : str
+        Second line of the TLE
+
+    Returns
+    -------
+    dict
+        Dictionary containing orbital elements and metadata:
+        {
+            'satnum': int,
+            'epoch': datetime,
+            'inclination_deg': float,
+            'raan_deg': float,
+            'eccentricity': float,
+            'arg_perigee_deg': float,
+            'mean_anomaly_deg': float,
+            'mean_motion_rev_per_day': float,
+            'semi_major_axis_km': float,
+            'rev_number': int
+        }
+    """
+
+    # Extract satellite number
+    satnum = str(line1[2:8])
+
+    # Epoch (YYDDD.DDDDDDDD format)
+    year = int(line1[16:18])
+    year += 2000 if year < 57 else 1900  # Standard NORAD rule (57 → 2057 boundary)
+    day_of_year = float(line1[19:31])
+    epoch = datetime(year, 1, 1) + timedelta(days=day_of_year - 1)
+
+    # Parse orbital elements
+    inclination = float(line2[8:16])          # degrees
+    raan = float(line2[17:25])                # degrees
+    ecc_str = line2[26:33]                    # no decimal point
+    eccentricity = float(f"0.{ecc_str}")
+    arg_perigee = float(line2[34:42])         # degrees
+    mean_anomaly = float(line2[43:51])        # degrees
+    mean_motion = float(line2[52:63])         # rev/day
+    rev_number = int(line2[63:69])
+
+    # Compute semi-major axis (from mean motion)
+    # a = (μ / (n * 2π / 86400)^2)^(1/3)
+    mu_earth = 398600.4418  # km^3/s^2
+    n_rad_s = mean_motion * 2 * np.pi / 86400.0
+    semi_major_axis = (mu_earth / (n_rad_s**2)) ** (1/3)
+
+    return {
+        'satnum': satnum,
+        'epoch': epoch,
+        'inclination_deg': inclination,
+        'raan_deg': raan,
+        'eccentricity': eccentricity,
+        'arg_perigee_deg': arg_perigee,
+        'mean_anomaly_deg': mean_anomaly,
+        'mean_motion_rev_per_day': mean_motion,
+        'semi_major_axis_km': semi_major_axis,
+        'rev_number': rev_number
+    }
