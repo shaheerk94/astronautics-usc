@@ -5,6 +5,7 @@ import globals as g
 ureg = pint.UnitRegistry()
 Distance = pint.Quantity
 
+
 def apparent_magnitude(r: Distance, abs_magnitude: float) -> float:
     """
     Calculate the apparent magnitude of an object.
