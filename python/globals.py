@@ -9,11 +9,10 @@ day_sec = 86400           # Seconds in a day
 year_sec = 365.25 * day_sec
 
 # Conversion helpers
-km_to_m = 1e3
-m_to_km = 1e-3
-kg_to_g = 1e3
 mil_to_cm = 0.00254
 ft2_to_m2 = 0.092903
+ft_to_m = 0.3048
+lbf_to_N = 4.44822
 
 # =====================================================
 # Planetary Constants
