@@ -1,6 +1,6 @@
 import numpy as np
 from datetime import datetime, timedelta
-
+from scipy.optimize import fsolve
 
 # =====================================================
 # Unit Conversions
@@ -524,3 +524,64 @@ def parse_tle(line1: str, line2: str):
         'semi_major_axis_km': semi_major_axis,
         'rev_number': rev_number
     }
+
+
+def nodal_regression_rate(a, e, i, J2=1.08263e-3, Re=6378.137, mu=398600.4418):
+    """
+    Computes the rate of nodal regression (RAAN precession) due to Earth's oblateness (J2 effect).
+
+    Parameters
+    ----------
+    a : float
+        Semi-major axis [km]
+    e : float
+        Eccentricity
+    i : float
+        Inclination [radians]
+    J2 : float, optional
+        Earth's J2 coefficient (default: 1.08263e-3)
+    Re : float, optional
+        Earth's mean equatorial radius [km] (default: 6378.137)
+    mu : float, optional
+        Earth's gravitational parameter [km^3/s^2] (default: 398600.4418)
+
+    Returns
+    -------
+    float
+        Rate of change of RAAN (radians per second)
+    """
+    n = np.sqrt(mu / a ** 3)
+    dOmega_dt = -1.5 * n * (Re / a) ** 2 * J2 * np.cos(i) / (1 - e ** 2) ** 2
+    return dOmega_dt
+
+
+def sun_sync_inclination(a, e=0, retrograde=True, J2=1.08263e-3, Re=6378.137, mu=398600.4418):
+    """
+    Computes the inclination for a Sun-synchronous orbit given semi-major axis.
+
+    Parameters
+    ----------
+    a : float
+        Semi-major axis [km]
+    e : float, optional
+        Eccentricity (default: 0)
+    retrograde : bool, optional
+        If True, returns retrograde inclination (~98°). If False, prograde (~82°)
+    J2, Re, mu : float, optional
+        Earth constants
+
+    Returns
+    -------
+    float
+        Inclination [radians]
+    """
+    target_rate = 1.991e-7  # rad/s (≈ 360° per year)
+    if not retrograde:
+        target_rate *= -1  # opposite direction for prograde
+
+    def f(i):
+        return nodal_regression_rate(a, e, i, J2, Re, mu) - target_rate
+
+    i_guess = np.deg2rad(98 if retrograde else 82)
+    i_sol = fsolve(f, i_guess)[0]
+    return i_sol
