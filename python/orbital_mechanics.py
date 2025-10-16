@@ -50,6 +50,19 @@ def orbital_period(u, a):
     return 2 * np.pi * np.sqrt((a ** 3)/u)
 
 
+def semimajor_axis_from_orbital_period(u, T):
+    """
+    Compute semimajor axis from orbital period.
+    Args:
+        u (float): Gravitational parameter μ (km^3/s^2).
+        a (float): Semi-major axis (km).
+
+    Returns:
+        float: Orbital period (s).
+    """
+    return (((T/(2*np.pi))**2)*u)**(1/3)
+
+
 def orbital_velocity(u, r, a):
     """
     Orbital velocity from the vis-viva equation.
@@ -569,3 +582,44 @@ def sun_sync_inclination(a, e=0, retrograde=True, J2=1.08263e-3, Re=6378.137, mu
     i_guess = np.deg2rad(98 if retrograde else 82)
     i_sol = fsolve(f, i_guess)[0]
     return i_sol
+
+
+def sun_sync_semi_major_axis(incl_deg, e=0.0):
+    """
+    Compute the semi-major axis (km) of a Sun-synchronous orbit
+    for a given inclination (degrees) and eccentricity.
+
+    Args:
+        incl_deg (float): Inclination in degrees
+        e (float): Orbital eccentricity (default=0)
+
+    Returns:
+        float: Semi-major axis in kilometers
+    """
+    # Constants
+    mu = 398600.4418  # km^3/s^2 (Earth)
+    J2 = 1.08262668e-3
+    Re = 6378.137  # km (Earth radius)
+    T_year = 365.2422 * 24 * 3600  # s
+
+    # Desired precession rate (rad/s)
+    omega_dot_target = 2 * np.pi / T_year
+
+    # Inclination in radians
+    i = np.deg2rad(incl_deg)
+
+    # Solve for mean motion n using J2 relation
+    # omega_dot = -(3/2)*J2*(Re/a)^2 * n * cos(i)/(1 - e^2)^2
+    # rearrange -> n = omega_dot * (2/3) * (a/Re)^2 * (1 - e^2)^2 / (J2 * cos(i))
+    # but n also = sqrt(mu/a^3)
+    # solve iteratively for a
+
+    def f(a):
+        n = np.sqrt(mu / a ** 3)
+        return abs((3 / 2) * J2 * (Re ** 2) * n * np.cos(i) / (a ** 2 * (1 - e ** 2) ** 2)) - omega_dot_target
+
+    # Simple numerical solve by sweeping a reasonable range (6500–8000 km)
+    a_vals = np.linspace(6500, 8000, 10000)
+    f_vals = np.abs([f(a) for a in a_vals])
+    a_best = a_vals[np.argmin(f_vals)]
+    return a_best
