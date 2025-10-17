@@ -5,6 +5,7 @@ import space_functions
 import space_functions as sf
 import orbital_mechanics as omf
 import globals as g
+from datetime import datetime, timedelta
 
 
 ureg = pint.UnitRegistry()
@@ -183,8 +184,57 @@ def problem13():
     tmax2 = 2 * lamb * np.sqrt(a**3/g.mu_earth)
     print(tmax2)
 
+def problem14():
+
+    # Part 1
+    Ps = 23 * 3600 + 56 * 60 + 4.09
+    print(Ps)
+    print(sf.format_time(Ps))
+
+    # Part 2
+    a = omf.semimajor_axis_from_orbital_period(g.mu_earth, Ps)
+    print('semimajor axis', a)
+    h = a - g.r_earth
+    print('altitude', h)
+
+    # Part D
+    rho = np.asin(g.r_earth/a)
+    print(rho)
+    print(rho * 180/np.pi)
+
+    # Part E
+    theta0 = np.pi/2 - rho
+    print(theta0)
+    print(theta0 * 180/np.pi)
+
+    # Part F
+    thetad = sf.dms_to_decimal(61, 13, 0, 'N')
+    theta = thetad * np.pi / 180
+    D = np.sqrt((g.r_earth ** 2) + (a ** 2) - (2 * g.r_earth * a * np.cos(theta)))
+    print('D', D)
+
+    elev = np.acos((a**2 - g.r_earth**2 - D**2 )/(- 2 * g.r_earth * D)) - np.pi/2
+    print('elevation', elev)
+    print('elevation', elev * 180/np.pi, 'rads')
+
+    # Part G
+    T = 2 * (D/g.c)
+    print('T', T, 's')
+    print(sf.format_time(T))
+
+    # Part 2
+    alpha = np.asin(g.r_earth/a)
+    Teclipse = alpha / (np.pi) * Ps
+
+    print('Teclipse', Teclipse, 's')
+    print('Teclipse:', sf.format_time(Teclipse))
+
+
+
+
+
 def main():
-    problem13()
+    problem14()
 
 
 if __name__ == "__main__":

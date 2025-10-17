@@ -104,7 +104,7 @@ def planet_distance(lam1_deg, beta1_deg, r1, lam2_deg, beta2_deg, r2):
     beta2 = np.deg2rad(beta2_deg)
 
     # Angular separation
-    cos_psi = planet_angles(lam1_deg, beta1_deg, lam2_deg, beta2_deg)
+    cos_psi = planet_angle(lam1_deg, beta1_deg, lam2_deg, beta2_deg)
 
     # Straight-line distance
     S_AU = np.sqrt(r1**2 + r2**2 - 2 * r1 * r2 * cos_psi)
@@ -242,3 +242,21 @@ def planet_angle(lam1_deg, beta1_deg, lam2_deg, beta2_deg):
     psi = np.acos(np.sin(beta1) * np.sin(beta2) +
                np.cos(beta1) * np.cos(beta2) * np.cos(lam1 - lam2))
     return psi
+
+
+def format_time(seconds):
+    """Return a nicely formatted time string from seconds."""
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, secs = divmod(rem, 60)
+
+    parts = []
+    if days > 0:
+        parts.append(f"{int(days)}d")
+    if hours > 0 or days > 0:
+        parts.append(f"{int(hours):02}h")
+    if minutes > 0 or hours > 0 or days > 0:
+        parts.append(f"{int(minutes):02}m")
+    parts.append(f"{secs:05.2f}s")
+
+    return " ".join(parts)
