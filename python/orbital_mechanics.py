@@ -522,7 +522,6 @@ def parse_tle(line1: str, line2: str):
     }
 
 
-
 def nodal_regression_rate(a, e, i, J2=1.08263e-3, Re=6378.137, mu=398600.4418):
     """
     Computes the rate of nodal regression (RAAN precession) due to Earth's oblateness (J2 effect).
