@@ -33,6 +33,7 @@ g0 = 9.80665                # m/s^2, standard gravity
 v_esc_earth = 11.186        # km/s, escape velocity from surface
 v_orbit_earth = 7.905       # km/s, circular orbit at LEO (~200 km)
 obliquity_earth = np.deg2rad(23.439)
+n_earth = 1.9909836747685184e-7
 
 # --- Moon ---
 mu_moon = 4902.800066       # km^3/s^2

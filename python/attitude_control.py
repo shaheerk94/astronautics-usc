@@ -10,7 +10,7 @@ def solar_radiation_force(th, CA, CS, CD, Fs, A):
 
     Args:
         theta (float): Incidence angle between beam and surface normal.
-                       0° = normal incidence; 90° = grazing. (radians)
+                       0 rad = normal incidence; pi/2 rad = grazing. (radians)
         CA (float): Absorbed fraction.
         CS (float): Specularly reflected fraction.
         CD (float): Diffusely (Lambertian) reflected fraction.

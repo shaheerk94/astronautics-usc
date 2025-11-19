@@ -59,6 +59,21 @@ def problem_17():
     Hxy = np.sqrt(2) * np.sin(phi)
     print(Hxy)
 
+
+def problem_18():
+    print('## Homework 18 ##')
+
+    Isc = 2711.6 # kg*m^2
+    wmax = 3600 * 2 * np.pi / 60 # rad/s
+    Hmax = 40.0
+    Tmax = 0.36
+    T2 = 0.280
+
+    phi1 = Tmax / Isc
+    phi2 = -1 * T2/Isc
+    print('phi1', f'{phi1:e}', 'rad/s^2')
+    print('phi2', f'{phi2:e}', 'rad/s^2')
+
     ## Part 2
     Tmax = .400 # N-m
     Iw = 0.2 # kg m^2
@@ -76,6 +91,7 @@ def problem_17():
 def main():
     # problem_16()
     problem_17()
+    problem_18()
 
 if __name__ == "__main__":
     main()
