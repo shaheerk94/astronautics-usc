@@ -51,12 +51,31 @@ def problem_16():
     print('Precession', omega*180/np.pi * 3600 * 24, 'deg/day')
 
 
+def problem_17():
+    print('## Homework 17 ##')
+    phi = 60 * np.pi/180
+    H = np.cos(phi)
+    Hy = 2 * np.sin(phi)
+    Hxy = np.sqrt(2) * np.sin(phi)
+    print(Hxy)
 
+    ## Part 2
+    Tmax = .400 # N-m
+    Iw = 0.2 # kg m^2
+    dt = 4 * 60 # s
+    wmax = Tmax * dt / (2*Iw)
+    print('wmax', wmax, 'rad/s')
+    print('wmax', wmax *  60/(2*np.pi), 'rpm')
 
+    H = Iw * wmax
+    print('H', H, 'Nms')
+    E = (1/2) * Iw * wmax**2
+    print('Energy', E, 'Joules')
 
 
 def main():
-    problem_16()
+    # problem_16()
+    problem_17()
 
 if __name__ == "__main__":
     main()

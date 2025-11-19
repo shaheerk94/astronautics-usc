@@ -7,6 +7,8 @@ G_km = 6.67430e-20  # km^3 kg^-1 s^-2
 AU = 1.495978707e8        # Astronomical unit, km
 day_sec = 86400           # Seconds in a day
 year_sec = 365.25 * day_sec
+c_m = 2.998e8 # m
+c_km = 2.998e5 # km
 
 # Conversion helpers
 mil_to_cm = 0.00254
@@ -84,3 +86,8 @@ earth_orbital_period = 365.25 * day_sec  # s
 # Sphere of influence radii (approximate, km)
 SOI_earth = 924000.0
 SOI_moon = 66000.0
+
+# Propulsion
+q = 1.6022e-19 # Coulombs; electric charge
+amu = 1.6605e-27 # kg; atomic mass unit
+
